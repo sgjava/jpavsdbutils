@@ -4,7 +4,7 @@
 This compares using JPA+Hibernate to DBUtils for adding, selecting and deleting
 rows of random data. I always knew DBUtils was faster than JPA, but I wanted to
 have an example, so I knew exactly how much faster DBUtils was. I borrowed the
-code from the TomEE examples for the JPA+Hibernate and built the DBUtils
+code from the TomEE examples for JPA+Hibernate and built the DBUtils
 equivalent. EntityManager does generate fewer lines of code, but the DBUtils
 code was not that much larger or complicated.
 
