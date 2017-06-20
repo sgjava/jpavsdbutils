@@ -33,5 +33,5 @@ INFO: Delete elapsed milliseconds: 25022
 
 This isn't just a rounding error it's a substantial difference! There may be
 some tweaks to get JPA to perform better, but when you are looking at Internet
-scale application this can be a big problem. I'll profile the tests to see
+scale applications this can be a big problem. I'll profile the tests to see
 exactly where JPA is slowing down since it doesn't appear to be CPU bound.
