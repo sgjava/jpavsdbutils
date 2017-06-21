@@ -31,6 +31,6 @@ INFO: DbUtils delete elapsed milliseconds: 895
 
 
 This [thread](http://tomee-openejb.979440.n4.nabble.com/JPA-vs-DBUtils-td4681918.html#a4681931)
-discussesthis project and this [blog](https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate)
+discusses this project and this [blog](https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate)
 discusses issues with JPA. This isn't designed to trash JPA, but rather give you
 some options.
