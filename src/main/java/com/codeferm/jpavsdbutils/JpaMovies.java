@@ -6,12 +6,12 @@
  */
 package com.codeferm.jpavsdbutils;
 
-import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
 import java.util.List;
+import javax.ejb.Singleton;
 
 /**
  * JPA movies EJB.
@@ -20,10 +20,10 @@ import java.util.List;
  * @version 1.0.0
  * @since 1.0.0
  */
-@Stateful
+@Singleton
 public class JpaMovies {
 
-    @PersistenceContext(unitName = "movie-unit", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "movie-unit", type = PersistenceContextType.TRANSACTION)
     private EntityManager entityManager;
 
     public void addMovie(JpaMovie movie) throws Exception {
@@ -31,7 +31,7 @@ public class JpaMovies {
     }
 
     public void deleteMovie(JpaMovie movie) throws Exception {
-        entityManager.remove(movie);
+        entityManager.remove(entityManager.contains(movie) ? movie : entityManager.merge(movie));
     }
 
     public List<JpaMovie> getMovies() throws Exception {

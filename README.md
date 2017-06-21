@@ -2,36 +2,35 @@
 
 ### Using TomEE 7.0.4-SNAPSHOT
 This compares using JPA+Hibernate to DBUtils for adding, selecting and deleting
-rows of random data. I always knew DBUtils was faster than JPA, but I wanted to
-have an example, so I knew exactly how much faster DBUtils was. I borrowed the
-code from the TomEE examples for JPA+Hibernate and built the DBUtils
-equivalent. EntityManager does generate fewer lines of code, but the DBUtils
-code was not that much larger or complicated.
+rows of random data. This give you an option when you run into Object-relational
+impedance mismatch or situations where JPQL may not be robust enough to handle a
+legacy RDBMS.
 
 Here's the results using 10,000 entities with an HSQL in memory database:
 
 ```
-Jun 19, 2017 10:41:02 PM com.codeferm.jpavsdbutils.DbUtilsTest test
-INFO: Add elapsed milliseconds: 2712
-Jun 19, 2017 10:41:02 PM com.codeferm.jpavsdbutils.DbUtilsTest test
-INFO: Get elapsed milliseconds: 124
-Jun 19, 2017 10:41:04 PM com.codeferm.jpavsdbutils.DbUtilsTest test
-INFO: Delete elapsed milliseconds: 1655
+Jun 20, 2017 9:39:40 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: JPA add elapsed milliseconds: 4765
+Jun 20, 2017 9:39:40 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: JPA get elapsed milliseconds: 323
+Jun 20, 2017 9:39:45 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: JPA delete elapsed milliseconds: 5035
 ```
 
 ```
-Jun 19, 2017 10:41:31 PM com.codeferm.jpavsdbutils.JpaTest test
-INFO: Add elapsed milliseconds: 26733
-Jun 19, 2017 10:41:31 PM com.codeferm.jpavsdbutils.JpaTest test
-INFO: Get elapsed milliseconds: 183
-Jun 19, 2017 10:41:56 PM com.codeferm.jpavsdbutils.JpaTest test
-INFO: Delete elapsed milliseconds: 25022
+Jun 20, 2017 9:39:47 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: DbUtils add elapsed milliseconds: 1757
+Jun 20, 2017 9:39:47 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: DbUtils get elapsed milliseconds: 67
+Jun 20, 2017 9:39:48 PM com.codeferm.jpavsdbutils.PerformanceTest performance
+INFO: DbUtils delete elapsed milliseconds: 895
 ```
-- DBUtils is 9.86 times faster than JPA+Hibernate for inserts
-- DBUtils is 1.47 times faster than JPA+Hibernate for selecting list
-- DBUtils is 15.11 times faster than JPA+Hibernate for deletes
+- DBUtils is 2.71 times faster than JPA+Hibernate for inserts
+- DBUtils is 4.82 times faster than JPA+Hibernate for selecting list
+- DBUtils is 5.62 times faster than JPA+Hibernate for deletes
 
-This isn't just a rounding error it's a substantial difference! There may be
-some tweaks to get JPA to perform better, but when you are looking at Internet
-scale applications this can be a big problem. I'll profile the tests to see
-exactly where JPA is slowing down since it doesn't appear to be CPU bound.
+
+This [thread](http://tomee-openejb.979440.n4.nabble.com/JPA-vs-DBUtils-td4681918.html#a4681931)
+discussesthis project and this [blog](https://virgo47.wordpress.com/2014/10/09/jpa-is-it-worth-it-horror-stories-with-eclipselink-and-hibernate)
+discusses issues with JPA. This isn't designed to trash JPA, but rather give you
+some options.
