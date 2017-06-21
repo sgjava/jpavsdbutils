@@ -8,10 +8,10 @@ package com.codeferm.jpavsdbutils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
 import java.util.List;
-import javax.ejb.Singleton;
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 
 /**
  * JPA movies EJB.
@@ -20,22 +20,23 @@ import javax.ejb.Singleton;
  * @version 1.0.0
  * @since 1.0.0
  */
-@Singleton
+@Transactional
+@ApplicationScoped
 public class JpaMovies {
 
-    @PersistenceContext(unitName = "movie-unit", type = PersistenceContextType.TRANSACTION)
+    @PersistenceContext(unitName = "movie-unit")
     private EntityManager entityManager;
 
-    public void addMovie(JpaMovie movie) throws Exception {
+    public void addMovie(JpaMovie movie) {
         entityManager.persist(movie);
     }
 
-    public void deleteMovie(JpaMovie movie) throws Exception {
-        entityManager.remove(entityManager.contains(movie) ? movie : entityManager.merge(movie));
+    public void deleteMovie(JpaMovie movie) {
+        entityManager.remove(entityManager.getReference(JpaMovie.class, movie.getId()));
     }
 
-    public List<JpaMovie> getMovies() throws Exception {
-        Query query = entityManager.createQuery("SELECT m from JpaMovie as m");
+    public List<JpaMovie> getMovies() {
+        Query query = entityManager.createNamedQuery("Movie.findAll");
         return query.getResultList();
     }
 

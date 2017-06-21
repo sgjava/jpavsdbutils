@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.TableGenerator;
 
 /**
  * JPA movie entity.
@@ -19,10 +21,12 @@ import javax.persistence.Id;
  * @since 1.0.0
  */
 @Entity
+@NamedQuery(name = "Movie.findAll", query = "SELECT m from JpaMovie as m")
 public class JpaMovie {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JpaMovieSeq")
+    @TableGenerator(name = "JpaMovieSeq", allocationSize = 1000)
     private long id;
 
     private String director;
@@ -36,6 +40,10 @@ public class JpaMovie {
         this.director = director;
         this.title = title;
         this.year = year;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getDirector() {

@@ -8,10 +8,11 @@ package com.codeferm.jpavsdbutils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.Stateful;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -24,7 +25,8 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
  * @version 1.0.0
  * @since 1.0.0
  */
-@Stateful
+@Transactional
+@ApplicationScoped
 public class DbUtilsMovies {
 
     /**
@@ -52,7 +54,6 @@ public class DbUtilsMovies {
      * Bean list handler to map result set to list entities.
      */
     BeanListHandler<DbUtilsMovie> beanListHandler;
-    
 
     @PostConstruct
     private void construct() throws SQLException {

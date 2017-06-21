@@ -6,6 +6,7 @@
  */
 package com.codeferm.jpavsdbutils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -15,6 +16,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import javax.inject.Inject;
+import javax.naming.NamingException;
 import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
 
@@ -41,9 +44,14 @@ public class PerformanceTest {
     private static final Logger log = Logger.getLogger(Test.class.
             getName());
 
+    @Inject
+    private DbUtilsMovies dbUtilsMovies;
+    @Inject
+    private JpaMovies jpaMovies;
+
     public final String randomString(final String chars, final int length) {
-        Random rand = new Random();
-        StringBuilder buf = new StringBuilder();
+        final Random rand = new Random();
+        final StringBuilder buf = new StringBuilder();
         for (int i = 0; i < length; i++) {
             buf.append(chars.charAt(rand.nextInt(chars.length())));
         }
@@ -51,28 +59,20 @@ public class PerformanceTest {
     }
 
     public final List<JpaMovie> generateData(final int maxItems) {
-        List<JpaMovie> dataList = new ArrayList<>();
+        final List<JpaMovie> dataList = new ArrayList<>();
         for (int i = 0; i < maxItems; i++) {
             dataList.add(new JpaMovie(randomString(CHARS, 20), randomString(CHARS, 50), 1950 + (int) (Math.random() * 67)));
         }
         return dataList;
     }
 
-    @Test
-    public final void performance() throws Exception {
-        final Properties p = new Properties();
-        p.put("movieDatabase", "new://Resource?type=DataSource");
-        p.put("movieDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("movieDatabase.JdbcUrl", "jdbc:hsqldb:mem:moviedb");
-        EJBContainer ejbContainer = EJBContainer.createEJBContainer(p);
-        Context context = ejbContainer.getContext();
-        final JpaMovies jpaMovies = (JpaMovies) context.lookup("java:global/jpavsdbutils/JpaMovies");
+    public final void performance() throws NamingException, SQLException {
         // Add movies
         long startTime = System.nanoTime();
         final List<JpaMovie> jpaDataList = generateData(MAX_ITEMS);
-        for (JpaMovie movie : jpaDataList) {
+        jpaDataList.forEach((movie) -> {
             jpaMovies.addMovie(movie);
-        }
+        });
         long difference = System.nanoTime() - startTime;
         log.info(String.format("JPA add elapsed milliseconds: %s", TimeUnit.NANOSECONDS.toMillis(difference)));
         // Get movies
@@ -83,21 +83,17 @@ public class PerformanceTest {
         assertEquals("List.size()", MAX_ITEMS, jpaList.size());
         // Delete movies
         startTime = System.nanoTime();
-        for (JpaMovie movie : jpaList) {
+        jpaList.forEach((movie) -> {
             jpaMovies.deleteMovie(movie);
-        }
+        });
         difference = System.nanoTime() - startTime;
         log.info(String.format("JPA delete elapsed milliseconds: %s", TimeUnit.NANOSECONDS.toMillis(difference)));
         assertEquals("Movies.getMovies()", 0, jpaMovies.getMovies().size());
-        ejbContainer.close();
-        // Run DBUtils tests with same data and JPA
-        ejbContainer = EJBContainer.createEJBContainer(p);
-        context = ejbContainer.getContext();
+        // Run DBUtils tests with same data as JPA
         final List<DbUtilsMovie> dbUtilsDataList = new ArrayList<>();
         jpaDataList.forEach((movie) -> {
             dbUtilsDataList.add(new DbUtilsMovie(movie.getDirector(), movie.getTitle(), movie.getYear()));
         });
-        DbUtilsMovies dbUtilsMovies = (DbUtilsMovies) context.lookup("java:global/jpavsdbutils/DbUtilsMovies");
         // Add movies
         startTime = System.nanoTime();
         for (DbUtilsMovie movie : dbUtilsDataList) {
@@ -119,6 +115,19 @@ public class PerformanceTest {
         difference = System.nanoTime() - startTime;
         log.info(String.format("DbUtils delete elapsed milliseconds: %s", TimeUnit.NANOSECONDS.toMillis(difference)));
         assertEquals("Movies.getMovies()", 0, dbUtilsMovies.getMovies().size());
-        ejbContainer.close();        
+    }
+    
+    @Test
+    public final void performanceTest() throws Exception {
+        final Properties p = new Properties();
+        p.put("movieDatabase", "new://Resource?type=DataSource");
+        p.put("movieDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
+        p.put("movieDatabase.JdbcUrl", "jdbc:hsqldb:mem:moviedb");
+        final EJBContainer ejbContainer = EJBContainer.createEJBContainer(p);
+        final Context context = ejbContainer.getContext();
+        context.bind("inject", this);
+        performance();
+        performance();
+        ejbContainer.close();
     }
 }
