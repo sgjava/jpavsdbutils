@@ -33,8 +33,7 @@ sgoldsmith@codeferm.com
                     <target>${java-api.version}</target>
                 </configuration>
             </plugin>
-            <!-- this tells maven to copy the openejb-javaagent jar into your target/ directory -->
-            <!-- where surefire can see it -->
+            <!-- This tells maven to copy the openejb-javaagent jar into your target directory -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -53,6 +52,7 @@ sgoldsmith@codeferm.com
                                     <artifactId>openejb-javaagent</artifactId>
                                     <version>${tomee.version}</version>                                    
                                     <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <destFileName>openejb-javaagent.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -65,7 +65,7 @@ sgoldsmith@codeferm.com
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
                 <configuration>
-                    <argLine>-javaagent:${basedir}/target/openejb-javaagent-7.0.4-20170621.040558-101.jar -Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                    <argLine>-javaagent:${basedir}/target/openejb-javaagent.jar -Dfile.encoding=${project.build.sourceEncoding}</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
