@@ -123,11 +123,11 @@ public class PerformanceTest {
         p.put("movieDatabase", "new://Resource?type=DataSource");
         p.put("movieDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
         p.put("movieDatabase.JdbcUrl", "jdbc:hsqldb:mem:moviedb");
-        final EJBContainer ejbContainer = EJBContainer.createEJBContainer(p);
-        final Context context = ejbContainer.getContext();
-        context.bind("inject", this);
-        performance();
-        performance();
-        ejbContainer.close();
+        try (EJBContainer ejbContainer = EJBContainer.createEJBContainer(p)) {
+            final Context context = ejbContainer.getContext();
+            context.bind("inject", this);
+            performance();
+            performance();
+        }
     }
 }
